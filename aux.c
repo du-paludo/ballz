@@ -48,8 +48,8 @@ char* get_current_time()
 {
     time_t current_time;
     time(&current_time);
-    char* s = ctime(&current_time);
-    return s;
+    char* string = ctime(&current_time);
+    return string;
 }
 
 int get_highscore(FILE* score_log)

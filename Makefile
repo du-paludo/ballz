@@ -1,12 +1,12 @@
-allegro_flags = `pkg-config allegro-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5 allegro_audio-5 allegro_acodec-5 allegro_image-5 --libs --cflags`
-flags = -Wall -std=c99 -lm
+links = -lm -lallegro_ttf -lallegro_font -lallegro_primitives -lallegro_acodec -lallegro_audio -lallegro_image -lallegro
+flags = -Wall -std=c99
 files = main.o libqueue.o states.o init.o game.o aux.o
 name = ballz
 
-all: ballz
+all: $(name)
 
-ballz: main.o $(files)
-	gcc -o $(name) $(files) $(flags) $(allegro_flags)
+$(name): main.o $(files)
+	gcc -o $(name) $(files) $(flags) $(links)
 
 main.o: main.c
 	gcc -c main.c $(flags)
@@ -30,4 +30,4 @@ clean:
 	rm -f *~ *.o
 
 purge: clean
-	rm -f $(nome)
+	rm -f $(name)

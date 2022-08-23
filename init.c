@@ -16,8 +16,9 @@
 
 ALLEGRO_DISPLAY* display_init()
 {
-    al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
-    al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
+    // Melhora a renderização, mas diminui performance
+    // al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
+    // al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
     ALLEGRO_DISPLAY* disp = al_create_display(DISP_W, DISP_H);
     init_test(disp, "display");
 
@@ -58,8 +59,6 @@ sprites_t* sprite_init()
     init_test(sprites->red_square, "quadrado vermelho");
     sprites->ball = al_load_bitmap("resources/ball.png");
     init_test(sprites->ball, "bola");
-    sprites->ball_line = al_load_bitmap("resources/ball_line.png");
-    init_test(sprites->ball_line, "linha de bolas");
     sprites->circle = al_load_bitmap("resources/circle.png");
     init_test(sprites->circle, "círculo");
 
@@ -68,16 +67,16 @@ sprites_t* sprite_init()
 
 audios_t* audio_init()
 {
-    init_test(al_install_audio(), "audio");
-    init_test(al_init_acodec_addon(), "audio codecs");
-    init_test(al_reserve_samples(128), "reserve samples");
+    init_test(al_install_audio(), "áudio");
+    init_test(al_init_acodec_addon(), "codec de áudio");
+    init_test(al_reserve_samples(128), "áudios reservados");
     audios_t* audios = malloc(sizeof(audios_t));
 
     audios->pop = al_load_sample("resources/bong_001.ogg");
-    init_test(audios->pop, "pop sound");
+    init_test(audios->pop, "som de contato");
 
     audios->circle_pickup = al_load_sample("resources/circle_pickup.wav");
-    init_test(audios->circle_pickup, "circle pickup sound");
+    init_test(audios->circle_pickup, "som de item coletado");
 
     return audios;
 }
@@ -144,7 +143,6 @@ void sprite_deinit(sprites_t* sprites)
     al_destroy_bitmap(sprites->yellow_square);
     al_destroy_bitmap(sprites->red_square);
     al_destroy_bitmap(sprites->ball);
-    al_destroy_bitmap(sprites->ball_line);
     al_destroy_bitmap(sprites->circle);
     free(sprites);
 }

@@ -15,6 +15,7 @@
 #include "game.h"
 #include "aux.h"
 
+// Controla se o easter egg está ativo ou não
 bool bccaux = false;
 
 int main()
@@ -62,6 +63,9 @@ int main()
     // Controla a velocidade das bolas
     bool speedup = false;
 
+    // Controla exibição do texto de acelerar
+    int texttimer = 0;
+
     // Variáveis de easter egg
     int last_key_pressed = 0;
     int bcctimer = 0;
@@ -70,9 +74,10 @@ int main()
     ALLEGRO_EVENT* event = malloc(sizeof(ALLEGRO_EVENT));
 
     // Variáveis para posição do mouse
+    float mx = 0, my = 0;
+
     int score = 0;
     int highscore = 0;
-    float mx = 0, my = 0;
     state_t state = BEGIN;
 
     // Variáveis para "tabuleiro" do jogo e fila de bolas
@@ -109,10 +114,14 @@ int main()
                     }
                 }
 
+                // Atualiza timers
                 if (bcctimer > 0)
                     bcctimer--;
                 else if (bcctimer == 0)
                     bccaux = false;
+
+                if (texttimer > 0)
+                    texttimer--;
 
                 // Atualiza a variável para redesenhar a tela
                 redraw = true;
@@ -157,20 +166,24 @@ int main()
                 // Se a tecla apertada for ESC...
                 if (event->keyboard.keycode == ALLEGRO_KEY_ESCAPE)
                 {
-                    // ... e estiver no menu inicial, encerra o jogo
-                    if (state == BEGIN)
+                    // ... e estiver no menu inicial ou tela de score, encerra o jogo
+                    if (state == BEGIN || state == SCORE)
                         done = true;
 
-                    // ... e não estiver no menu inicial, vai para o menu inicial
-                    else
-                    {
-                        // Se estiver jogando, destroi a fila de bolas
-                        if (state == BALL_AIM || state == BALL_SHOOT)
-                            queue_destroy(ball_queue);
+                    // ... e estiver na tela de ajuda, volta para o menu inicial
+                    else if (state == HELP)
                         state = BEGIN;
+
+                    // ... e estiver jogando, vai para a tela de score
+                    else if (state == BALL_AIM || state == BALL_SHOOT)
+                    {
+                        queue_destroy(ball_queue);
+                        file_update(score_log, score, &highscore);
+                        state = SCORE;
                     }
                 }
 
+                // Armazena a última tecla apertada
                 last_key_pressed = event->keyboard.keycode;
                 break;
 
@@ -198,6 +211,7 @@ int main()
                 else if (state == BALL_AIM)
                 {
                     ball_init(ball_queue, mx, my);
+                    texttimer = 300;
                     state = BALL_SHOOT;
                 }
 
@@ -228,7 +242,7 @@ int main()
                     break;
                 case BALL_AIM: state_ballaim(fonts, sprites, board, ball_queue, score, mx, my);
                     break;
-                case BALL_SHOOT: state_ballshoot(fonts, sprites, board, ball_queue, score);
+                case BALL_SHOOT: state_ballshoot(fonts, sprites, board, ball_queue, score, texttimer);
                     break;
                 case SCORE: state_score(fonts, score_log, score, highscore);
                     break;

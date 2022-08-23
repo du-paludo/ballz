@@ -52,7 +52,6 @@ typedef struct sprites_t
 	ALLEGRO_BITMAP* yellow_square;
 	ALLEGRO_BITMAP* red_square;
 	ALLEGRO_BITMAP* ball;
-	ALLEGRO_BITMAP* ball_line;
 	ALLEGRO_BITMAP* circle;
 } sprites_t;
 

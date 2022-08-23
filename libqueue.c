@@ -11,7 +11,7 @@
 #include "struct.h"
 #include "libqueue.h"
 
-queue_t* queue_init ()
+queue_t* queue_init()
 {
     queue_t* q = malloc(sizeof(queue_t));
     if (q == NULL)
@@ -25,7 +25,7 @@ queue_t* queue_init ()
     return q;
 }
 
-queue_t* queue_destroy (queue_t* q)
+queue_t* queue_destroy(queue_t* q)
 {
     node_t* current = q->begin;
     node_t* aux;
@@ -43,19 +43,19 @@ queue_t* queue_destroy (queue_t* q)
     return NULL;
 }
 
-int queue_empty (queue_t* q)
+int queue_empty(queue_t* q)
 {
     if (q->begin == NULL)
         return 1;
     return 0;
 }
 
-int queue_size (queue_t* q)
+int queue_size(queue_t* q)
 {
     return q->size;
 }
 
-int queue_insert (queue_t* q)
+int queue_insert(queue_t* q)
 {
     // Aloca memória para um novo nodo
     node_t* aux = malloc(sizeof(node_t));
@@ -87,7 +87,7 @@ int queue_insert (queue_t* q)
     return 1; 
 }
 
-int dequeue (queue_t* q)
+int queue_remove(queue_t* q)
 {
     /* Se a fila estiver vazia, retorna 0 */
     if (queue_empty(q))

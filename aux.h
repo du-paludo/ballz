@@ -11,10 +11,7 @@ int random(int a, int b);
 float get_angle(float x1, float y1, float x2, float y2);
 
 // Transforma um ângulo dado em graus para radianos
-// float deg_to_rad(float angle);
-
-// Transforma um ângulo dado em radianos para graus
-// float rad_to_deg(float angle);
+float deg_to_rad(float angle);
 
 // Retorna o horário atual do sistema em formato de string
 char* get_current_time();

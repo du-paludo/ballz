@@ -11,8 +11,8 @@
 
 #include "struct.h"
 #include "libqueue.h"
-#include "game.h"
 #include "aux.h"
+#include "game.h"
 
 void board_update(square_t*** board, queue_t* ball_queue, state_t* state, FILE* score_log, int* score, int* highscore)
 {
@@ -37,6 +37,7 @@ void board_update(square_t*** board, queue_t* ball_queue, state_t* state, FILE* 
 
     // Escolhe uma coluna aleatória para aparecer o círculo
     int circle_col = random(0, DISP_W/SQUARE_SIZE-1);
+    int square_count = 0;
 
     for (col = 0; col < DISP_W/SQUARE_SIZE; col++)
     {
@@ -46,10 +47,13 @@ void board_update(square_t*** board, queue_t* ball_queue, state_t* state, FILE* 
             board[1][col]->lives = 1;
             board[1][col]->circle = true;
         }
-        // Caso contrário, cria um quadrado com probabilidade de 2/5
-        else if (random(1, 5) <= 2)
-            // A quantidade de vidas do quadrado é escolhida aleatoriamente entre o score e o dobro
-            board[1][col]->lives = random(*score, (*score)*2);
+        // Caso contrário, cria um quadrado com probabilidade de 2/5, limitado a 4 quadrados por round
+        else if (random(1, 5) <= 2 && square_count < 4)
+        {
+            // A quantidade de vidas do quadrado é escolhida aleatoriamente entre o score e 1.6*score
+            board[1][col]->lives = random(*score, floor((*score)*1.6));
+            square_count++;
+        }
     }
 
     // Se houver algum quadrado na última linha da matriz, o jogo acaba
@@ -100,6 +104,7 @@ void file_update(FILE* score_log, int score, int* highscore)
 void ball_collision(square_t*** board, queue_t* ball_queue, ball_t* ball, audios_t* audios)
 {
     bool first = true;
+
     for (int row = 0; row < DISP_H/SQUARE_SIZE; row++)
         for (int col = 0; col < DISP_W/SQUARE_SIZE; col++)
             if (board[row][col]->lives > 0)
@@ -112,6 +117,7 @@ void ball_collision(square_t*** board, queue_t* ball_queue, ball_t* ball, audios
                         board[row][col]->circle = false;
                         board[row][col]->lives--;
                         ball_queue->circle_count++;
+                        return;
                     }    
                 }
                 else
@@ -123,6 +129,7 @@ void ball_collision(square_t*** board, queue_t* ball_queue, ball_t* ball, audios
                             board[row][col]->lives = 0;
                         else
                             board[row][col]->lives--;
+                        return;
                     }
                 }
             }
@@ -142,14 +149,14 @@ void ball_collision(square_t*** board, queue_t* ball_queue, ball_t* ball, audios
     }
 }
 
-bool ball_circle_collide (ball_t* ball, square_t* square)
+bool ball_circle_collide(ball_t* ball, square_t* square)
 {
-    float x1 = ball->x+BALL_SIZE/2;
-    float y1 = ball->y+BALL_SIZE/2;
+    float x1 = ball->x+BALL_RADIUS;
+    float y1 = ball->y+BALL_RADIUS;
     float x2 = square->x+CIRCLE_SIZE;
     float y2 = square->y+CIRCLE_SIZE;
     double distance = sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
-    if (distance < (BALL_SIZE/2 + CIRCLE_SIZE/2))
+    if (distance < (BALL_RADIUS + CIRCLE_SIZE/2))
         return true;
     return false;
 }
@@ -182,6 +189,7 @@ void draw_board(fonts_t* fonts, sprites_t* sprites, square_t*** board, int score
 {
     // Desenha o score no topo da tela
     al_draw_textf(fonts->font_medium, al_map_rgb_f(1,1,1), DISP_W/2, 10, ALLEGRO_ALIGN_CENTRE, "%d", score);
+    
     for (int row = 0; row < DISP_H/SQUARE_SIZE; row++)
         for (int col = 0; col < DISP_W/SQUARE_SIZE; col++)
             if (board[row][col]->lives > 0)
